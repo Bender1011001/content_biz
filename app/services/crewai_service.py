@@ -131,20 +131,51 @@ def email_content_to_client(client_email: str, content_text: str) -> bool:
 
 # --- CrewAI Agents ---
 
+# Create tool objects compatible with CrewAI 0.108.0
+# Convert functions to proper tool format
+from crewai import Tool
+
+brief_data_tool = Tool(
+    name="GetBriefData",
+    description="Fetch and validate the client brief data using the provided brief ID.",
+    func=get_brief_data
+)
+
 brief_processor = Agent(
     role="Brief Processor",
     goal="Fetch and validate the client brief data using the provided brief ID.",
     backstory="You are an efficient administrator responsible for retrieving and preparing client request details.",
-    tools=[get_brief_data],
+    tools=[brief_data_tool],
     verbose=True,
     allow_delegation=False
+)
+
+# Convert the content generation tool
+content_generation_tool_obj = Tool(
+    name="GenerateContent",
+    description="Generate high-quality written content based on the client's brief specifications and save it to the database.",
+    func=content_generation_tool.generate
+)
+
+# Convert the get_content_text function
+content_text_tool = Tool(
+    name="GetContentText",
+    description="Fetch the generated text of a specific content record using its ID.",
+    func=get_content_text
+)
+
+# Convert the email_content_to_client function
+email_tool = Tool(
+    name="EmailContentToClient",
+    description="Email the generated content to the client using their email address.",
+    func=email_content_to_client
 )
 
 content_generator = Agent(
     role="Content Generator",
     goal="Generate high-quality written content based on the client's brief specifications. Return the ID of the generated content.",
     backstory="You are a skilled AI writing assistant, capable of creating engaging content tailored to specific needs.",
-    tools=[content_generation_tool.generate], # Pass the method directly
+    tools=[content_generation_tool_obj],
     verbose=True,
     allow_delegation=False
 )
@@ -153,7 +184,7 @@ delivery_agent = Agent(
     role="Content Delivery Specialist",
     goal="Retrieve the generated content using its ID, fetch the client's email using the brief ID, and email the content to the client.",
     backstory="You are responsible for the final step: ensuring the client receives their requested content promptly.",
-    tools=[get_brief_data, get_content_text, email_content_to_client],
+    tools=[brief_data_tool, content_text_tool, email_tool],
     verbose=True,
     allow_delegation=False # Keep it simple for now
 )
