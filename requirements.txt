@@ -4,8 +4,8 @@ uvicorn==0.23.2
 gunicorn==21.2.0  # Added for Render deployment
 sqlalchemy==2.0.23
 psycopg2-binary==2.9.9
-pydantic==2.4.2
-pydantic[email]==2.4.2  # Includes email-validator
+pydantic==2.7.1  # Updated to resolve dependency conflict
+pydantic[email]==2.7.1  # Updated to match pydantic version
 python-dotenv==1.0.0
 alembic==1.12.1
 jinja2==3.1.2
