@@ -52,5 +52,7 @@ async def shutdown_event():
     logger.info("Shutting down AI Content Creation Service...")
 
 if __name__ == "__main__":
-    logger.info("Starting development server...")
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    import os
+    port = int(os.getenv("PORT", 8000))
+    logger.info(f"Starting development server on port {port}...")
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
