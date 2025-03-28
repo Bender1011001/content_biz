@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: content-biz
+    env: python
+    plan: free  # Upgrade to paid for scale
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn -k uvicorn.workers.UvicornWorker main:app"
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false  # Add manually in Render dashboard
+      - key: STRIPE_API_KEY
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SENDGRID_API_KEY
+        sync: false
+      - key: QUALITY_THRESHOLD
+        value: "85"
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        sync: false

@@ -1,0 +1,17 @@
+# Environment variables
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Database file (if using SQLite locally)
+test.db
+
+# VS Code settings
+.vscode/
+
+# Render specific (optional, but good practice)
+.render/

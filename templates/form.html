@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Content Brief - AI Content Creation Service</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI Content Creation Service</h1>
+            <p class="tagline">High-quality content, generated for you</p>
+        </header>
+
+        <main>
+            <section class="form-container">
+                <h2>Submit a Content Brief</h2>
+                <p>Fill out the form below to request AI-generated content. Each submission costs $75.</p>
+
+                <form id="brief-form" action="/api/briefs/" method="POST">
+                    <div class="form-group">
+                        <label for="client_name">Your Name</label>
+                        <input type="text" id="client_name" name="client_name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="client_email">Your Email</label>
+                        <input type="email" id="client_email" name="client_email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="topic">Topic</label>
+                        <input type="text" id="topic" name="topic" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="brief_text">Brief Description</label>
+                        <textarea id="brief_text" name="brief_text" rows="6" required></textarea>
+                        <p class="hint">Provide details about what you want the content to cover.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tone">Tone</label>
+                        <select id="tone" name="tone">
+                            <option value="professional">Professional</option>
+                            <option value="conversational">Conversational</option>
+                            <option value="academic">Academic</option>
+                            <option value="friendly">Friendly</option>
+                            <option value="humorous">Humorous</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="target_audience">Target Audience</label>
+                        <input type="text" id="target_audience" name="target_audience" placeholder="e.g., Small business owners, Tech professionals">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="word_count">Word Count</label>
+                        <input type="number" id="word_count" name="word_count" min="300" max="3000" value="800">
+                    </div>
+
+                    <div class="payment-section">
+                        <h3>Payment Information</h3>
+                        <p>You'll be charged $75 for this content. Payment will be processed securely through Stripe.</p>
+                        
+                        <div id="payment-element">
+                            <!-- Stripe payment element will be inserted here -->
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Submit and Pay</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 AI Content Creation Service. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="/static/js/form.js"></script>
+</body>
+</html>
