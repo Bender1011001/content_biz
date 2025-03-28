@@ -19,3 +19,13 @@ def get_db():
         yield db
     finally:
         db.close()
+
+# Context manager for use outside of FastAPI dependency injection
+class get_db_context:
+    """A context manager for database sessions."""
+    def __enter__(self):
+        self.db = SessionLocal()
+        return self.db
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.db.close()
