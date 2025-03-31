@@ -1,0 +1,21 @@
+# .replit
+language = "python3"
+entrypoint = "main.py" # Or wherever your main FastAPI app instance is defined
+
+# Command to run the application
+# Runs migrations first, then starts the server
+run = "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port $PORT"
+
+# Specify packages needed
+[packages]
+uvicorn = "*"
+# Add other specific package versions if needed, otherwise Replit uses requirements.txt
+
+# Optional: If system dependencies are needed (e.g., for psycopg2 binary)
+# [nix]
+# channel = "stable-23_11" # Or the appropriate channel
+# pkgs = ["postgresql-lib"] # Example if libpq is needed
+
+# Environment variables should be set in Replit Secrets, not here.
+[env]
+PYTHONUNBUFFERED = "1" # Often useful for logging

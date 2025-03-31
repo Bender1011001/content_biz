@@ -1,3 +1,14 @@
+# Render specific (optional, but good practice)
+.render/
+
+# Virtual environment
+.venv/
+
+# Pytest cache
+.pytest_cache/
+
+# Git directory (usually implicitly ignored by many tools, but good to be explicit)
+.git/
 # Environment variables
 .env
 

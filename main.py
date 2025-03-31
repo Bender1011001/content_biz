@@ -6,6 +6,7 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
+import config # Import the config module
 from app.api.router import api_router
 from app.db.database import engine
 from app.db.models import Base
@@ -33,7 +34,18 @@ app.include_router(api_router, prefix="/api")
 async def home(request: Request):
     """Render the home page with the brief submission form."""
     logger.debug("Home page requested")
-    return templates.TemplateResponse("form.html", {"request": request})
+    # Pass the Stripe Publishable Key to the template context
+    context = {
+        "request": request,
+        "stripe_publishable_key": config.STRIPE_PUBLISHABLE_KEY 
+    }
+    if not config.STRIPE_PUBLISHABLE_KEY:
+        logger.warning("STRIPE_PUBLISHABLE_KEY is not set in the environment.")
+        # Optionally handle the case where the key is missing, e.g., show an error
+        # For now, we'll pass None or an empty string, but the JS needs to handle this.
+        context["stripe_publishable_key"] = "" 
+        
+    return templates.TemplateResponse("form.html", context)
 
 @app.get("/health")
 def health_check():

@@ -4,71 +4,54 @@ let elements;
 let paymentElement;
 let form = document.getElementById('brief-form');
 let submitButton = form.querySelector('button[type="submit"]');
+let paymentElementContainer = document.getElementById('payment-element');
 
-// Initialize Stripe
-async function initializeStripe() {
+// Appearance object for Stripe Elements
+const appearance = {
+    theme: 'stripe',
+    variables: {
+        colorPrimary: '#4a6cf7',
+        borderRadius: '4px'
+    }
+};
+
+// Initialize Stripe with Publishable Key
+function initializeStripe() {
+    const stripePublishableKey = document.body.dataset.stripeKey;
+    if (!stripePublishableKey) {
+        console.error('Stripe Publishable Key not found.');
+        showError('Payment system configuration error. Please contact support.');
+        submitButton.disabled = true; // Disable form if key is missing
+        return;
+    }
     try {
-        // In a real implementation, the publishable key would be loaded from the server
-        // For this demo, we use a placeholder
-        const stripePublishableKey = 'pk_test_placeholder';
-        
-        // Initialize Stripe
         stripe = Stripe(stripePublishableKey);
-        
-        // Fetch client secret from the server
-        const response = await fetch('/api/payments/create-intent', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                amount: 75.00  // $75 fixed price
-            })
-        });
-        
-        const data = await response.json();
-        const clientSecret = data.clientSecret;
-        
-        // Create Elements instance
-        elements = stripe.elements({
-            clientSecret,
-            appearance: {
-                theme: 'stripe',
-                variables: {
-                    colorPrimary: '#4a6cf7',
-                    borderRadius: '4px'
-                }
-            }
-        });
-        
-        // Create and mount the Payment Element
-        paymentElement = elements.create('payment');
-        paymentElement.mount('#payment-element');
-        
+        console.log("Stripe initialized.");
     } catch (error) {
         console.error('Error initializing Stripe:', error);
-        showError('Error initializing payment form. Please try again later.');
+        showError('Error initializing payment system. Please try again later.');
+        submitButton.disabled = true;
     }
 }
 
 // Handle form submission
 async function handleSubmit(event) {
     event.preventDefault();
-    
-    if (!stripe || !elements) {
-        showError('Payment processing not initialized. Please refresh the page.');
+
+    if (!stripe) {
+        showError('Payment system not initialized. Please refresh the page or contact support.');
         return;
     }
-    
+
     // Disable the submit button to prevent multiple submissions
     setLoading(true);
-    
+
     // Validate form
     if (!validateForm()) {
         setLoading(false);
         return;
     }
-    
+
     // Collect form data
     const formData = {
         client_name: document.getElementById('client_name').value,
@@ -79,43 +62,76 @@ async function handleSubmit(event) {
         target_audience: document.getElementById('target_audience').value,
         word_count: parseInt(document.getElementById('word_count').value)
     };
-    
+
     try {
-        // Submit brief to server
+        // 1. Submit brief to server to get clientSecret
+        console.log("Submitting brief data...");
         const briefResponse = await fetch('/api/briefs/', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formData)
         });
-        
+
         if (!briefResponse.ok) {
-            throw new Error('Failed to submit brief');
+            const errorData = await briefResponse.json().catch(() => ({ detail: 'Failed to submit brief data.' }));
+            throw new Error(errorData.detail || 'Failed to submit brief data.');
         }
-        
+
         const briefData = await briefResponse.json();
+        const clientSecret = briefData.payment_intent_client_secret;
+        const briefId = briefData.brief_id;
+        console.log("Brief submitted, clientSecret received:", clientSecret);
+
+        if (!clientSecret) {
+             throw new Error('Could not retrieve payment details. Please try again.');
+        }
+
+        // 2. Create and mount payment element *now*
+        console.log("Creating and mounting Stripe Payment Element...");
+        paymentElementContainer.innerHTML = ''; // Clear previous content if any
+        elements = stripe.elements({ clientSecret, appearance });
+        paymentElement = elements.create('payment');
+        paymentElement.mount('#payment-element');
+        console.log("Payment Element mounted.");
+
+        // 3. Confirm payment with Stripe
+        // Small delay to ensure element is fully rendered? May not be needed.
+        // await new Promise(resolve => setTimeout(resolve, 100)); 
         
-        // Confirm payment with Stripe
+        console.log("Confirming payment...");
         const { error } = await stripe.confirmPayment({
             elements,
             confirmParams: {
-                return_url: `${window.location.origin}/payment-success?brief_id=${briefData.brief_id}`
+                // Make sure to change this to your payment completion page
+                // Pass brief_id to potentially show relevant info on success page
+                return_url: `${window.location.origin}/payment-success?brief_id=${briefId}` 
             }
         });
-        
+
+        // This point will only be reached if there is an immediate error when
+        // confirming the payment. Otherwise, your customer will be redirected to
+        // your `return_url`. For some payment methods like iDEAL, your customer will
+        // be redirected to an intermediate site first to authorize the payment, then
+        // redirected to the `return_url`.
         if (error) {
-            throw error;
+             // Handle errors from stripe.confirmPayment
+            console.error("Stripe confirmPayment error:", error);
+            if (error.type === "card_error" || error.type === "validation_error") {
+                showError(error.message);
+            } else {
+                showError("An unexpected error occurred during payment.");
+            }
+            setLoading(false); // Re-enable button on error
         }
-        
-        // Payment succeeded (this won't execute as user will be redirected)
-        
+        // If no error, the user is redirected by Stripe. setLoading(false) is not needed here.
+
     } catch (error) {
-        console.error('Error submitting form:', error);
+        console.error('Error during submission process:', error);
         showError(error.message || 'An error occurred. Please try again.');
-        setLoading(false);
+        setLoading(false); // Re-enable button on error
     }
 }
+
 
 // Validate form inputs
 function validateForm() {
@@ -176,20 +192,9 @@ function setLoading(isLoading) {
     }
 }
 
-// Initialize when the page loads
+// Initialize Stripe when the page loads
 window.addEventListener('load', function() {
-    // Temporarily comment out the Stripe initialization for demo purposes
-    // initializeStripe();
-    
-    // For the demo, we'll just use a placeholder message
-    const paymentElement = document.getElementById('payment-element');
-    paymentElement.innerHTML = `
-        <div style="padding: 15px; background-color: #f8f9fa; border-radius: 4px; text-align: center;">
-            <p>Stripe Payment Element would appear here in production.</p>
-            <p style="color: #6c757d; font-size: 0.9rem;">This is a demo version.</p>
-        </div>
-    `;
-    
+    initializeStripe();
     // Add submit handler
     form.addEventListener('submit', handleSubmit);
 });
