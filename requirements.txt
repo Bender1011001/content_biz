@@ -12,13 +12,12 @@ jinja2==3.1.2
 python-multipart==0.0.6
 email-validator==2.1.0.post1
 
-# AI and LLM
+# AI and LLM 
 openai>=1.68.2
 crewai>=0.108.0
 
 # Quality checks
 language-tool-python==2.7.1
-spacy==3.8.4
 
 # Integrations
 stripe==7.0.0
