@@ -13,7 +13,7 @@ python-multipart==0.0.6
 email-validator==2.1.0.post1
 
 # AI and LLM 
-openai==1.18.0
+openai>=1.61.0
 crewai==0.108.0
 langchain==0.1.7
 spacy==3.7.2
