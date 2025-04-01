@@ -135,13 +135,28 @@ def email_content_to_client(client_email: str, content_text: str) -> bool:
 
 # Create tool objects compatible with CrewAI 0.108.0
 # Convert functions to proper tool format
-from crewai import Tool
+from crewai.tools import tool # Using the tool decorator from crewai.tools
 
-brief_data_tool = Tool(
-    name="GetBriefData",
-    description="Fetch and validate the client brief data using the provided brief ID.",
-    func=get_brief_data
-)
+# Apply the tool decorator to our functions
+@tool("GetBriefData")
+def brief_data_tool(brief_id: str):
+    """Fetch and validate the client brief data using the provided brief ID."""
+    return get_brief_data(brief_id)
+
+@tool("GenerateContent")
+def content_generation_tool_func(brief_data: dict):
+    """Generate high-quality written content based on the client's brief specifications and save it to the database."""
+    return content_generation_tool.generate(brief_data)
+
+@tool("GetContentText")
+def content_text_tool(content_id: str):
+    """Fetch the generated text of a specific content record using its ID."""
+    return get_content_text(content_id)
+
+@tool("EmailContentToClient")
+def email_tool(client_email: str, content_text: str):
+    """Email the generated content to the client using their email address."""
+    return email_content_to_client(client_email, content_text)
 
 brief_processor = Agent(
     role="Brief Processor",
@@ -152,32 +167,11 @@ brief_processor = Agent(
     allow_delegation=False
 )
 
-# Convert the content generation tool
-content_generation_tool_obj = Tool(
-    name="GenerateContent",
-    description="Generate high-quality written content based on the client's brief specifications and save it to the database.",
-    func=content_generation_tool.generate
-)
-
-# Convert the get_content_text function
-content_text_tool = Tool(
-    name="GetContentText",
-    description="Fetch the generated text of a specific content record using its ID.",
-    func=get_content_text
-)
-
-# Convert the email_content_to_client function
-email_tool = Tool(
-    name="EmailContentToClient",
-    description="Email the generated content to the client using their email address.",
-    func=email_content_to_client
-)
-
 content_generator = Agent(
     role="Content Generator",
     goal="Generate high-quality written content based on the client's brief specifications. Return the ID of the generated content.",
     backstory="You are a skilled AI writing assistant, capable of creating engaging content tailored to specific needs.",
-    tools=[content_generation_tool_obj],
+    tools=[content_generation_tool_func],
     verbose=True,
     allow_delegation=False
 )

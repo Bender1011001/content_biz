@@ -26,5 +26,5 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-# Added --no-cache-dir to pip install
-args = "pip install --no-cache-dir -r requirements.txt && python -m spacy download en_core_web_sm && alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 5000"
+# Updated installation command to ensure compatibility with CrewAI
+args = "python -m pip install --break-system-packages --no-cache-dir openai>=1.61.0 && python -m pip install --break-system-packages --no-cache-dir -r requirements.txt && python -m spacy download en_core_web_sm && alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 5000"
