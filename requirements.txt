@@ -4,8 +4,8 @@ uvicorn==0.23.2
 gunicorn==21.2.0  # Added for Render deployment
 sqlalchemy==2.0.23
 psycopg2-binary==2.9.9
-pydantic>=1.10.0,<2.0.0  # Downgraded to v1 for spacy compatibility
-pydantic[email]>=1.10.0,<2.0.0  # Downgraded to v1 for spacy compatibility
+pydantic>=1.10.0  # Removed upper bound for v2 compatibility with crewai
+pydantic[email]>=1.10.0  # Removed upper bound for v2 compatibility with crewai
 python-dotenv==1.0.0
 alembic==1.12.1
 jinja2==3.1.2
