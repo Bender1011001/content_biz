@@ -5,7 +5,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_t
 from ..db.models import Payment, Brief
 
 # Set Stripe API key from environment variable
-stripe.api_key = os.getenv("STRIPE_API_KEY")
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY") # Updated to match the config.py variable name
 
 logger = logging.getLogger(__name__)
 

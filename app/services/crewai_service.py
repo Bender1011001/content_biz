@@ -23,7 +23,7 @@ except OSError:
     # Depending on requirements, might want to raise an error or exit
     nlp = None # Set to None to handle gracefully later if needed
 
-QUALITY_THRESHOLD = float(os.getenv("QUALITY_THRESHOLD", 85.0))
+QUALITY_THRESHOLD = float(os.getenv("QUALITY_THRESHOLD", 0.85)) # Ensure it's matching the default in config.py (0-1 scale vs 0-100)
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY") # Needed for ContentCrewService
 
 # --- CrewAI Tools ---
@@ -107,7 +107,9 @@ def check_content_quality(content_text: str) -> bool:
             nlp(s1.text).similarity(nlp(s2.text))
             for s1, s2 in zip(sentences[:-1], sentences[1:])
         ]
-        score = (sum(similarities) / len(similarities)) * 100 if similarities else 100
+        # Calculate raw similarity score (0-1 scale)
+        score = sum(similarities) / len(similarities) if similarities else 1.0 
+        # Compare directly with QUALITY_THRESHOLD (also on 0-1 scale)
         is_good_quality = score >= QUALITY_THRESHOLD
         logger.info(f"Tool: Quality score: {score:.2f} (Threshold: {QUALITY_THRESHOLD}). Pass: {is_good_quality}")
         return is_good_quality

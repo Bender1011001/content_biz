@@ -3,8 +3,8 @@ language = "python3"
 entrypoint = "main.py" # Or wherever your main FastAPI app instance is defined
 
 # Command to run the application
-# Runs migrations first, then starts the server
-run = "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port $PORT"
+# Installs spaCy language model, runs migrations, then starts the server
+run = "pip install -r requirements.txt && python -m spacy download en_core_web_sm && alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port $PORT"
 
 # Specify packages needed
 [packages]

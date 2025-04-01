@@ -17,9 +17,9 @@ def send_content_email(email: str, content_text: str):
     Uses SendGrid if SENDGRID_API_KEY is available, otherwise falls back to SMTP.
     """
     sendgrid_api_key = os.getenv("SENDGRID_API_KEY")
-    smtp_user = os.getenv("SMTP_USER")
-    smtp_pass = os.getenv("SMTP_PASS")
-    from_email = smtp_user or "noreply@contentbiz.com" # Use SMTP user or a default
+    smtp_user = os.getenv("EMAIL_USERNAME")  # Updated to match config.py variable name
+    smtp_pass = os.getenv("EMAIL_PASSWORD")  # Updated to match config.py variable name
+    from_email = os.getenv("EMAIL_FROM") or smtp_user or "noreply@contentbiz.com" # Use configured sender, or username, or default
 
     try:
         if sendgrid_api_key:
@@ -38,7 +38,9 @@ def send_content_email(email: str, content_text: str):
                  raise Exception(f"SendGrid failed with status {response.status_code}")
         elif smtp_user and smtp_pass:
             logger.info(f"Sending email to {email} via SMTP")
-            with smtplib.SMTP("smtp.gmail.com", 587) as server: # Assuming Gmail SMTP
+            smtp_host = os.getenv("EMAIL_HOST", "smtp.gmail.com")
+            smtp_port = int(os.getenv("EMAIL_PORT", "587"))
+            with smtplib.SMTP(smtp_host, smtp_port) as server: # Using environment variables
                 server.starttls()
                 server.login(smtp_user, smtp_pass)
                 message = f"Subject: Your Content is Ready!\n\n{content_text}"
