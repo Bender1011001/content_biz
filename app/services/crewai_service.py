@@ -2,7 +2,6 @@
 
 import logging
 import os
-import spacy
 import asyncio
 from crewai import Agent, Task, Crew, Process
 from sqlalchemy.orm import Session
