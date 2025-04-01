@@ -1,7 +1,6 @@
 # .replit
 language = "python3"
 entrypoint = "main.py"
-run = "alembic upgrade head && uvicorn main:app --host 0.0.0.0"
 modules = ["python-3.12", "nodejs-20", "web", "postgresql-16"]
 
 [packages]
@@ -11,6 +10,7 @@ uvicorn = "*"
 PYTHONUNBUFFERED = "1"
 
 [deployment]
+# This might be overridden by the workflow below, but let's keep it simple for now
 run = ["sh", "-c", "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port $PORT"]
 
 [nix]
@@ -26,4 +26,5 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "pip install -r requirements.txt && python -m spacy download en_core_web_sm && alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 5000"
+# Added --no-cache-dir to pip install
+args = "pip install --no-cache-dir -r requirements.txt && python -m spacy download en_core_web_sm && alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 5000"
