@@ -10,7 +10,6 @@ uvicorn = "*"
 PYTHONUNBUFFERED = "1"
 
 [deployment]
-# This might be overridden by the workflow below, but let's keep it simple for now
 run = ["sh", "-c", "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port $PORT"]
 
 [nix]
@@ -26,9 +25,4 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-<<<<<<< HEAD
-# Added --no-cache-dir to pip install
-args = "pip install --no-cache-dir -r requirements.txt && python -m spacy download en_core_web_sm && alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 5000"
-=======
-args = "pip install -r requirements.txt && uvicorn main:app --host 0.0.0.0 --port 5000"
->>>>>>> e71b960 (Assistant checkpoint: Fix dependencies and configure run workflow)
+args = "python -m pip install --no-cache-dir -r requirements.txt && python -m spacy download en_core_web_sm && alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 5000"
