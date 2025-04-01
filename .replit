@@ -1,21 +1,17 @@
 # .replit
 language = "python3"
-entrypoint = "main.py" # Or wherever your main FastAPI app instance is defined
+entrypoint = "main.py"
+run = "alembic upgrade head && uvicorn main:app --host 0.0.0.0"
+modules = ["python-3.12", "nodejs-20", "web", "postgresql-16"]
 
-# Command to run the application
-# Installs spaCy language model, runs migrations, then starts the server
-run = "pip install -r requirements.txt && python -m spacy download en_core_web_sm && alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port $PORT"
-
-# Specify packages needed
 [packages]
 uvicorn = "*"
-# Add other specific package versions if needed, otherwise Replit uses requirements.txt
 
-# Optional: If system dependencies are needed (e.g., for psycopg2 binary)
-# [nix]
-# channel = "stable-23_11" # Or the appropriate channel
-# pkgs = ["postgresql-lib"] # Example if libpq is needed
-
-# Environment variables should be set in Replit Secrets, not here.
 [env]
-PYTHONUNBUFFERED = "1" # Often useful for logging
+PYTHONUNBUFFERED = "1"
+
+[deployment]
+run = ["sh", "-c", "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port $PORT"]
+
+[nix]
+channel = "stable-24_05"
