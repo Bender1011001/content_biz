@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - Premium Content Service</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <style>
+        .success-container {
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .success-icon {
+            color: #4BB543;
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        .success-message {
+            margin-bottom: 30px;
+        }
+        .brief-details {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        .brief-details h3 {
+            margin-top: 0;
+        }
+        .next-steps {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Premium Content Service</h1>
+            <p class="tagline">High-quality content, crafted by experts for you</p>
+        </header>
+
+        <main>
+            <section class="success-container">
+                <div class="success-icon">✓</div>
+                <h2>Payment Successful!</h2>
+                
+                <div class="success-message">
+                    <p>Thank you for your order! Your brief has been received and our expert writing team is now working on your content.</p>
+                </div>
+                
+                <div class="brief-details">
+                    <h3>Order Details</h3>
+                    <p><strong>Brief ID:</strong> <span id="brief-id"></span></p>
+                    <p><strong>Topic:</strong> <span id="topic"></span></p>
+                    <p><strong>Word Count:</strong> <span id="word-count"></span> words</p>
+                </div>
+                
+                <div class="next-steps">
+                    <h3>What Happens Next?</h3>
+                    <p>Our team of professional writers will carefully review your brief and create high-quality content tailored to your specifications.</p>
+                    <p>You'll receive your completed content via email within <strong>24-48 hours</strong>.</p>
+                    <p>If you have any questions, please contact our support team.</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Premium Content Service. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Extract brief_id from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const briefId = urlParams.get('brief_id');
+        
+        // Display brief ID
+        if (briefId) {
+            document.getElementById('brief-id').textContent = briefId;
+        } else {
+            document.getElementById('brief-id').textContent = 'Not available';
+        }
+        
+        // In a real implementation, you would fetch the brief details from the server
+        // using the brief_id and populate the other fields
+        // For now, we'll just show placeholders
+        document.getElementById('topic').textContent = 'Your requested topic';
+        document.getElementById('word-count').textContent = '800';
+    </script>
+</body>
+</html>

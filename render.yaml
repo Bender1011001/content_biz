@@ -3,22 +3,42 @@ services:
     name: content-biz
     env: python
     plan: free  # Upgrade to paid for scale
-    buildCommand: "pip install -r requirements.txt"
+    # Build command includes installing requirements and running migrations
+    buildCommand: "pip install -r requirements.txt && alembic upgrade head"
     startCommand: "gunicorn -k uvicorn.workers.UvicornWorker main:app -b 0.0.0.0:$PORT"
     envVars:
-      - key: OPENROUTER_API_KEY
-        sync: false  # Add manually in Render dashboard
-      - key: STRIPE_API_KEY
-        sync: false
-      - key: SMTP_USER
-        sync: false
-      - key: SMTP_PASS
-        sync: false
-      - key: SENDGRID_API_KEY
-        sync: false
-      - key: QUALITY_THRESHOLD
-        value: "85"
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: content-biz-db # Replace with your Render database name
+          property: connectionString
+      - key: STRIPE_SECRET_KEY
+        sync: false # Add manually in Render dashboard
+      - key: STRIPE_PUBLISHABLE_KEY
+        sync: false # Add manually in Render dashboard
       - key: SECRET_KEY
-        sync: false
+        generateValue: true # Let Render generate a secure key
+      - key: OPENROUTER_API_KEY
+        sync: false # Add manually in Render dashboard
+      - key: EMAIL_HOST
+        sync: false # Add manually
+      - key: EMAIL_PORT
+        sync: false # Add manually (e.g., 587)
+      - key: EMAIL_USERNAME
+        sync: false # Add manually
+      - key: EMAIL_PASSWORD
+        sync: false # Add manually (e.g., app password or API key)
+      - key: EMAIL_FROM
+        sync: false # Add manually
+      - key: ENVIRONMENT
+        value: production
+      - key: QUALITY_THRESHOLD
+        value: "0.85" # Keep as string, config.py converts to float
+      - key: LOG_LEVEL
+        value: INFO
+      # Add other necessary env vars from .env.example if needed
+      # - key: SERPER_API_KEY
+      #   sync: false
+      # - key: ALGORITHM
+      #   value: HS256 # Default in .env.example
+      # - key: ACCESS_TOKEN_EXPIRE_MINUTES
+      #   value: 30 # Default in .env.example

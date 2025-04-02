@@ -47,6 +47,16 @@ async def home(request: Request):
         
     return templates.TemplateResponse("form.html", context)
 
+@app.get("/payment-success", response_class=HTMLResponse)
+async def payment_success(request: Request, brief_id: str = None):
+    """Render the payment success page."""
+    logger.debug(f"Payment success page requested for brief_id: {brief_id}")
+    context = {
+        "request": request,
+        "brief_id": brief_id
+    }
+    return templates.TemplateResponse("payment-success.html", context)
+
 @app.get("/health")
 def health_check():
     """Health check endpoint to verify the API is running."""

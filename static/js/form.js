@@ -117,9 +117,10 @@ async function handleSubmit(event) {
              // Handle errors from stripe.confirmPayment
             console.error("Stripe confirmPayment error:", error);
             if (error.type === "card_error" || error.type === "validation_error") {
-                showError(error.message);
+                showError(error.message); // Keep specific Stripe messages
             } else {
-                showError("An unexpected error occurred during payment.");
+                // Refined generic message
+                showError("There was an issue processing your payment. Please double-check your payment details or try a different payment method. Contact support if issues continue.");
             }
             setLoading(false); // Re-enable button on error
         }
@@ -127,7 +128,8 @@ async function handleSubmit(event) {
 
     } catch (error) {
         console.error('Error during submission process:', error);
-        showError(error.message || 'An error occurred. Please try again.');
+        let userMessage = 'An unexpected error occurred while submitting your brief. Please check your details and try again. If the problem persists, please contact support.';
+        showError(userMessage);
         setLoading(false); // Re-enable button on error
     }
 }
