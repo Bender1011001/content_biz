@@ -28,7 +28,20 @@ This was caused by a change in the CrewAI API in version 0.108.0, which moved fr
   )
   ```
 
-## 2. Updated Replit Configuration
+## 2. Fixed Dependency Conflicts
+
+The application was also failing due to dependency conflicts between various packages, particularly around `pydantic` and `jinja2` versions.
+
+### Solution:
+- Updated `requirements.txt` to use more flexible version constraints:
+  ```
+  pydantic>=2.8.0  # Updated to satisfy instructor's requirement
+  jinja2>=3.1.4    # Updated to satisfy instructor's requirement
+  python-multipart>=0.0.7  # Updated to meet FastAPI's requirements
+  ```
+- Used minimum version requirements (`>=`) instead of pinning to exact versions to allow pip to resolve compatible versions
+
+## 3. Updated Replit Configuration
 
 Updated the `.replit` file to ensure proper dependency installation:
 
@@ -41,11 +54,11 @@ Key changes:
 - Used `--break-system-packages` flag to handle potential system package conflicts
 - Kept the `--no-cache-dir` flag to avoid using cached packages that might cause conflicts
 
-## 3. Created Documentation
+## 4. Created Documentation
 
 Created two new documentation files:
 
-### 3.1 Replit Setup Instructions
+### 4.1 Replit Setup Instructions
 Created `replit_setup_instructions.md` with detailed instructions for:
 - Initial setup
 - Configuring secrets
@@ -55,7 +68,7 @@ Created `replit_setup_instructions.md` with detailed instructions for:
 - Troubleshooting common issues
 - Production considerations
 
-### 3.2 Replit Assistant Prompt
+### 4.2 Replit Assistant Prompt
 Created `replit_assistant_prompt.md` with a prompt for the Replit AI assistant to:
 - Verify dependencies
 - Configure the `.replit` file
@@ -63,7 +76,7 @@ Created `replit_assistant_prompt.md` with a prompt for the Replit AI assistant t
 - Verify basic functionality
 - Check secret usage
 
-## 4. Next Steps
+## 5. Next Steps
 
 The application should now be ready to run on Replit. The next steps are:
 
